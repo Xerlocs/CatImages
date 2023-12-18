@@ -1,24 +1,25 @@
 package cl.dv.catimages
 
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.Toast
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import org.json.JSONArray
 import org.json.JSONException
-import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity(), APICallback {
 
     private lateinit var gato: ImageView
     private lateinit var getRequestButton : Button
     private lateinit var listData : MutableList<String>
-    private var URL : String = "https://api.thecatapi.com/v1/images/search?api_key=live_LeL2KtwWC1nwmPF8actkDkBICIgfKb5AcFNMnF5ojPQsYI8RtptGGeUAij03jNb6breed_ids={}"
+    private lateinit var spinner: Spinner
+    private var URL : String = "https://api.thecatapi.com/v1/images/search?api_key=live_LeL2KtwWC1nwmPF8actkDkBICIgfKb5AcFNMnF5ojPQsYI8RtptGGeUAij03jNb6breed_ids="
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,11 +27,45 @@ class MainActivity : AppCompatActivity(), APICallback {
 
         getRequestButton = findViewById(R.id.generarButton)
         gato = findViewById(R.id.apiURL)
+        spinner = findViewById(R.id.breeds_spinner)
 
-        val executor = Executors.newSingleThreadExecutor()
-        val handler = Handler(Looper.getMainLooper())
+        val listBreeds = listOf(
+            "Random",
+            "Abyssinian",
+            "Aegean",
+            "American Bobtail",
+            "American Curl",
+            "American Shorthair",
+            "American Wirehair",
+            "Arabian Mau",
+            "Autralian Mist",
+            "Balinese"
+        )
 
-        var image: Bitmap? = null
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listBreeds)
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = arrayAdapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val selectedItem = position
+                //Toast.makeText(this@MainActivity, "You have selected $selectedItem breed", Toast.LENGTH_SHORT).show()
+
+                if(selectedItem == 0){
+
+                }else{
+                    URL = "https://api.thecatapi.com/v1/images/search?api_key=live_LeL2KtwWC1nwmPF8actkDkBICIgfKb5AcFNMnF5ojPQsYI8RtptGGeUAij03jNb6breed_ids=${procesarSegunPosicion(selectedItem)}"
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+        }
 
         listData = mutableListOf(
 
@@ -43,10 +78,28 @@ class MainActivity : AppCompatActivity(), APICallback {
         }
     }
 
+    private fun procesarSegunPosicion(posicion: Int): String {
+        val stringDevolver = when (posicion) {
+            1 -> "abys"
+            2 -> "aege"
+            3 -> "abob"
+            4 -> "acur"
+            5 -> "asho"
+            6 -> "awir"
+            7 -> "amau"
+            8 -> "amis"
+            9 -> "bali"
+            else -> "Posición no válida"
+        }
+
+        return stringDevolver
+    }
+
     override fun onRequestComplete(result: String) {
         listData = processingData(result)
         val imageURL = listData.component1().toString()
-        Toast.makeText(this, imageURL, Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, imageURL, Toast.LENGTH_LONG).show()
+        Glide.with(this).load(imageURL).into(gato)
         //Toast.makeText(this, result, Toast.LENGTH_LONG).show()
     }
 
@@ -69,4 +122,6 @@ class MainActivity : AppCompatActivity(), APICallback {
         }
         return list.toMutableList()
     }
+
+
 }

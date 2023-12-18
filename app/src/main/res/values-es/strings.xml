@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CatImages</string>
     <string name="generator_title">Generador Imagenes de Gatos</string>
     <string name="button_generator">Generar</string>
     <string name="group_name">Por: Diego Valderrama y Lisbeth González</string>
