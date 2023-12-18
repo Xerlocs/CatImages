@@ -9,16 +9,22 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
+import cl.dv.catimages.database.CatDatabase
+import cl.dv.catimages.database.CatEntity
 import com.bumptech.glide.Glide
 import org.json.JSONArray
 import org.json.JSONException
 
 class MainActivity : AppCompatActivity(), APICallback {
 
+    private lateinit var db: CatDatabase
     private lateinit var gato: ImageView
     private lateinit var getRequestButton : Button
     private lateinit var listData : MutableList<String>
     private lateinit var spinner: Spinner
+    private lateinit var breed: String
+    private var id: Int = 0
     private var URL : String = "https://api.thecatapi.com/v1/images/search?api_key=live_LeL2KtwWC1nwmPF8actkDkBICIgfKb5AcFNMnF5ojPQsYI8RtptGGeUAij03jNb6breed_ids="
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +34,11 @@ class MainActivity : AppCompatActivity(), APICallback {
         getRequestButton = findViewById(R.id.generarButton)
         gato = findViewById(R.id.apiURL)
         spinner = findViewById(R.id.breeds_spinner)
+
+        db = Room.databaseBuilder(
+            applicationContext,
+            CatDatabase::class.java, "database-name"
+        ).allowMainThreadQueries().build()
 
         val listBreeds = listOf(
             "Random",
@@ -57,9 +68,11 @@ class MainActivity : AppCompatActivity(), APICallback {
                 //Toast.makeText(this@MainActivity, "You have selected $selectedItem breed", Toast.LENGTH_SHORT).show()
 
                 if(selectedItem == 0){
-
+                    URL = "https://api.thecatapi.com/v1/images/search?api_key=live_LeL2KtwWC1nwmPF8actkDkBICIgfKb5AcFNMnF5ojPQsYI8RtptGGeUAij03jNb6breed_ids="
+                    breed = "random"
                 }else{
                     URL = "https://api.thecatapi.com/v1/images/search?api_key=live_LeL2KtwWC1nwmPF8actkDkBICIgfKb5AcFNMnF5ojPQsYI8RtptGGeUAij03jNb6breed_ids=${procesarSegunPosicion(selectedItem)}"
+                    breed = procesarSegunPosicion(selectedItem)
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -101,6 +114,12 @@ class MainActivity : AppCompatActivity(), APICallback {
         //Toast.makeText(this, imageURL, Toast.LENGTH_LONG).show()
         Glide.with(this).load(imageURL).into(gato)
         //Toast.makeText(this, result, Toast.LENGTH_LONG).show()
+
+        id += 1
+
+        db.getCatDao().insertAll(
+            CatEntity(id, imageURL, breed)
+        )
     }
 
     fun processingData(result: String): MutableList<String>{
