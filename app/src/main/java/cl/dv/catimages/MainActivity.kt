@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity(), APICallback {
     private lateinit var gato: ImageView
     private lateinit var getRequestButton : Button
     private lateinit var listData : MutableList<String>
-    private var URL : String = "https://api.thecatapi.com/v1/images/search?api_key=live_LeL2KtwWC1nwmPF8actkDkBICIgfKb5AcFNMnF5ojPQsYI8RtptGGeUAij03jNb6"
+    private var URL : String = "https://api.thecatapi.com/v1/images/search?api_key=live_LeL2KtwWC1nwmPF8actkDkBICIgfKb5AcFNMnF5ojPQsYI8RtptGGeUAij03jNb6breed_ids={}"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
