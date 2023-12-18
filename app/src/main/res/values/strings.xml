@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CatImages</string>
+    <string name="generator_title">Cat Image Generator</string>
+    <string name="button_generator">Generate</string>
 </resources>
